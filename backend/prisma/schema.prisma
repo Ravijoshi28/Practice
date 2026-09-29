@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int           @id @default(autoincrement())
+  name      String?
+  createdAt DateTime      @default(now())
+  email     String        @unique
+  password  String
+  isVerified Boolean
+  refresh   String?
+  shortLink ShortedLink[]
+}
+
+model ShortedLink {
+  id           Int      @id @default(autoincrement())
+  originalLink String
+  shortLink    String   @unique
+  createdAt    DateTime @default(now())
+  click        Int      @default(0)
+  createdById  Int
+  createdBy    User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([createdById])
+}
